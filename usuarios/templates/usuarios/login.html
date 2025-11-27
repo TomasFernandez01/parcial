@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <h3 class="card-title mb-0 fw-bold">Iniciar Sesión</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light border-end-0">
+                                {% if field.name == 'username' %}User{% endif %}
+                                {% if field.name == 'password' %}Pass{% endif %}
+                            </span>
+                            {{ field }}
+                        </div>
+                        {% if field.errors %}
+                        <div class="alert alert-danger mt-2 py-2" role="alert">
+                            <small>{{ field.errors }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {% for error in form.non_field_errors %}
+                        <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-semibold mt-3 fs-5">
+                        Ingresar
+                    </button>
+                </form>
+                
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="text-muted mb-2">¿Primera vez en el sistema?</p>
+                    <a href="{% url 'registro' %}" class="btn btn-outline-primary">
+                        Crear Cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+.input-group-text {
+    min-width: 50px;
+    justify-content: center;
+    border-right: none;
+}
+.form-control {
+    border-left: none;
+    padding-left: 0;
+}
+.form-control:focus {
+    box-shadow: none;
+    border-color: #0d6efd;
+}
+.btn {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

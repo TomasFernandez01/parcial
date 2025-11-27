@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Mi Perfil</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <strong>Usuario: </strong>
+                        {{ user.username }}
+                    </label>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">
+                        <strong>Email: </strong>
+                        {{ user.email }}
+                    </label>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">
+                        <strong>Fecha de registro: </strong>
+                        {{ user.date_joined|date:"d/m/Y H:i" }}
+                    </label>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">
+                        <strong>Último acceso: </strong>
+                        {{ user.last_login|date:"d/m/Y H:i" }}
+                    </label>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                        ALUMNOS
+                    </a>
+                    <a href="{% url 'buscar_wikipedia' %}" class="btn btn-primary">
+                        WIKI
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

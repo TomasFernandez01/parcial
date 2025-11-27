@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        {% comment %} <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Dashboard de Alumnos</h2>
+            <span class="text-muted">Bienvenido, {{ user.username }}</span>
+        </div> {% endcomment %}
+
+        <!-- Formulario para agregar alumno -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Datos del Alumno</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
+                                {{ form.nombre }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.carrera.id_for_label }}" class="form-label">Carrera</label>
+                                {{ form.carrera }}
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de alumnos -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    Cerificados de Alumnos ({{ alumnos.count }})
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if alumnos %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Carrera</th>
+                                <th>Fecha de Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alumno in alumnos %}
+                            <tr>
+                                <td>{{ alumno.nombre }}</td>
+                                <td>{{ alumno.email }}</td>
+                                <td>{{ alumno.carrera }}</td>
+                                <td>{{ alumno.fecha_creacion|date:"d/m/Y" }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'descargar_pdf' alumno.id %}" class="btn btn-sm btn-outline-primary">
+                                            📄 PDF
+                                        </a>
+                                        <a href="{% url 'enviar_pdf_email' alumno.id %}" class="btn btn-sm btn-outline-success">
+                                            Email
+                                        </a>
+                                        <form method="post" action="{% url 'eliminar_alumno' alumno.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar a {{ alumno.nombre }}?')">
+                                                Borrar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted">No tienes alumnos registrados todavía.</p>
+                    <p>¡Usa el formulario de arriba para agregar tu primer alumno!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
