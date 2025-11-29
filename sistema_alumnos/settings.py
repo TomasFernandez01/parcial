@@ -3,13 +3,20 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-(a#pmz$-3l(e^9%4!h(7@b$f4t^hvuvodxnz01i=^2z=ra#o%g'
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY no configurada")
 
 # DEBUG - IMPORTANTE: False en producción
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-# ALLOWED_HOSTS - Agregar tu dominio de Render
-ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = []
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+# Para desarrollo local
+if DEBUG:
+    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,7 +25,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Nuestras apps
     'usuarios',
     'alumnos', 
     'scraper',
@@ -29,7 +35,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # MIDDLEWARE - Agregar Whitenoise para archivos estáticos
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← NUEVO
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -58,7 +64,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sistema_alumnos.wsgi.application'
 
-# DATABASES - Configuración para Render (PostgreSQL)
+# DATABASES - Configuración por defecto (SQLite para desarrollo)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -66,11 +72,11 @@ DATABASES = {
     }
 }
 
-# CONFIGURACIÓN PARA RENDER - Agregar al final
+# CONFIGURACIÓN PARA RENDER
+
 if 'RENDER' in os.environ:
     # Configuración de producción
     DEBUG = False
-    
     # Database de Render (PostgreSQL)
     import dj_database_url
     DATABASES = {
@@ -79,10 +85,6 @@ if 'RENDER' in os.environ:
             conn_max_age=600
         )
     }
-    
-    # Static files
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -104,5 +106,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+# STATIC FILES - Configuración única
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
